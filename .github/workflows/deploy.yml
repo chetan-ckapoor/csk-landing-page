@@ -25,6 +25,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Enable GitHub Pages via API
+        run: |
+          # Try to create Pages with GitHub Actions source
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages" \
+            -d '{"build_type":"workflow"}' || true
+          # If already exists, update source to GitHub Actions
+          curl -s -X PUT \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages" \
+            -d '{"build_type":"workflow"}' || true
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
